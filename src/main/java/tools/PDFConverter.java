@@ -22,6 +22,7 @@ public class PDFConverter {
             BufferedImage bufferedPage = pdfRenderer.renderImageWithDPI(i, dpi, ImageType.RGB);
             bufferedImages.add(bufferedPage);
         }
+        document.close();
 
         return bufferedImages;
     }

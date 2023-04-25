@@ -5,6 +5,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import tools.JSONBean;
 import tools.PDFConverter;
 import tools.QRReader;
+import tools.StringEncoder;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.*;
@@ -55,6 +56,8 @@ public class QRResource {
                     httpStatus = 204;
                 }
 
+                result = StringEncoder.encode(result);
+
                 data.add(result);
             }
         } else {
@@ -66,6 +69,7 @@ public class QRResource {
         JSONBean jsonBean = new JSONBean(errorCode, data, message);
 
         Response.ResponseBuilder builder = Response.status(httpStatus).entity(jsonBean);
+
         return builder.build();
     }
 
@@ -88,6 +92,7 @@ public class QRResource {
             BufferedInputStream bufferStream = new BufferedInputStream(input);
             BufferedImage bufferedImage = ImageIO.read(bufferStream);
             result = QRReader.readQR(bufferedImage, charset, hashMap);
+            result = StringEncoder.encode(result);
             data.add(result);
         } catch (Throwable e){
             errorCode = 2;
@@ -97,7 +102,7 @@ public class QRResource {
 
         JSONBean jsonBean = new JSONBean(errorCode, data, message);
 
-        Response.ResponseBuilder builder = Response.status(httpStatus).entity(jsonBean);
+        Response.ResponseBuilder builder = Response.status(httpStatus).entity(jsonBean).encoding("Cp1251");
         return builder.build();
     }
 }
