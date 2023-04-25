@@ -1,13 +1,15 @@
 package tools;
 
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.Result;
+import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Map;
 
 public class QRReader {
@@ -19,5 +21,18 @@ public class QRReader {
         MultiFormatReader reader = new MultiFormatReader();
         Result result = reader.decode(binaryBitmap);
         return result.getText();
+    }
+    public static byte[] createQR(String data, String charset, Map hashMap, int size)
+            throws IOException, WriterException {
+        String encodedData = new String(data.getBytes(), charset);
+
+        MultiFormatWriter writer = new MultiFormatWriter();
+        BitMatrix bitMatrix = writer.encode(encodedData, BarcodeFormat.QR_CODE, size, size);
+        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", baos);
+
+        return baos.toByteArray();
     }
 }

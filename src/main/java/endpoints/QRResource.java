@@ -2,12 +2,10 @@ package endpoints;
 
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import tools.JSONBean;
-import tools.PDFConverter;
-import tools.QRReader;
-import tools.StringEncoder;
+import tools.*;
 
 import javax.imageio.ImageIO;
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -103,6 +101,28 @@ public class QRResource {
         JSONBean jsonBean = new JSONBean(errorCode, data, message);
 
         Response.ResponseBuilder builder = Response.status(httpStatus).entity(jsonBean).encoding("Cp1251");
+        return builder.build();
+    }
+
+    @POST
+    @Path("/create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("image/png")
+    public Response createQR(CreateRequest request){
+        String charset = "UTF-8";
+        Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap();
+        hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+        int httpStatus = 200;
+
+        byte[] byteResponse = null;
+
+        try {
+            byteResponse = QRReader.createQR(request.data, charset, hashMap, request.size);
+        } catch (Throwable e){
+            httpStatus = 500;
+        }
+
+        Response.ResponseBuilder builder = Response.status(httpStatus).entity(byteResponse);
         return builder.build();
     }
 }
