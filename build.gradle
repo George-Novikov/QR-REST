@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group 'com.valtime'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    maven{
+        url 'https://mvnrepository.com/artifact/com.google.zxing/core'
+    }
+    maven{
+        url 'https://mvnrepository.com/artifact/com.google.zxing/javase'
+    }
+    maven{
+        url 'https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.8'
+}
+
+dependencies {
+    implementation 'com.google.zxing:core:3.5.1'
+    implementation 'com.google.zxing:javase:3.5.1'
+
+    compile 'org.jboss.spec:jboss-javaee-7.0:1.1.1.Final'
+
+    implementation 'org.apache.pdfbox:pdfbox:2.0.28'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
