@@ -4,7 +4,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -25,5 +27,12 @@ public class PDFConverter {
         document.close();
 
         return bufferedImages;
+    }
+
+    public static int measureLength(BufferedImage bufferedImage) throws IOException{
+        ByteArrayOutputStream bufferStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", bufferStream);
+        bufferStream.close();
+        return bufferStream.size();
     }
 }

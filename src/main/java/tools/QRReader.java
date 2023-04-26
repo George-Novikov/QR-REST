@@ -20,9 +20,14 @@ public class QRReader {
 
         MultiFormatReader reader = new MultiFormatReader();
         Result result = reader.decode(binaryBitmap);
-        return result.getText();
+
+        String output = "";
+        if (result != null){
+            output = result.getText();
+        }
+        return output;
     }
-    public static byte[] createQR(String data, String charset, Map hashMap, int size)
+    public static byte[] createQR(String data, String charset, int size)
             throws IOException, WriterException {
         String encodedData = new String(data.getBytes(), charset);
 
@@ -32,7 +37,9 @@ public class QRReader {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", baos);
+        byte[] output = baos.toByteArray();
+        baos.close();
 
-        return baos.toByteArray();
+        return output;
     }
 }
