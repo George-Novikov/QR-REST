@@ -47,7 +47,7 @@ public class QRResource {
                 String result = "";
 
                 try {
-                    result = QRReader.readQR(bufferedImage, charset, hashMap);
+                    result = new QRReader().readQR(bufferedImage);
                 } catch (Throwable e){
                     if (e.getMessage() != null){
                         errorCode = 2;
@@ -57,8 +57,6 @@ public class QRResource {
                         message = "Source file has empty pages.";
                     }
                 }
-
-                //result = StringEncoder.encode(result);
 
                 if (result.length() > 0) {
                     data.add(result);
@@ -87,16 +85,11 @@ public class QRResource {
         String message = "Output is valid.";
         int httpStatus = 200;
 
-        Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<>();
-        hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-        String charset = "UTF-8";
-
         String result = "";
         try {
             BufferedInputStream bufferStream = new BufferedInputStream(input);
             BufferedImage bufferedImage = ImageIO.read(bufferStream);
-            result = QRReader.readQR(bufferedImage, charset, hashMap);
-            //result = StringEncoder.encode(result);
+            result = new QRReader().readQR(bufferedImage);
             data.add(result);
         } catch (Throwable e){
             errorCode = 2;

@@ -5,15 +5,25 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class QRReader {
-    public static String readQR(BufferedImage bufferedImage, String charset, Map hashMap) throws NotFoundException {
+    private Map<EncodeHintType, ErrorCorrectionLevel> hashMap;
+    private static final String charset = "UTF-8";
+
+    public QRReader(){
+        hashMap = new HashMap();
+        hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+    }
+
+    public String readQR(BufferedImage bufferedImage) throws NotFoundException {
         BufferedImageLuminanceSource imageSource = new BufferedImageLuminanceSource(bufferedImage);
         HybridBinarizer hybridBinarizer = new HybridBinarizer(imageSource);
         BinaryBitmap binaryBitmap = new BinaryBitmap(hybridBinarizer);
@@ -27,7 +37,7 @@ public class QRReader {
         }
         return output;
     }
-    public static byte[] createQR(String data, String charset, int size)
+    public byte[] createQR(String data, int size)
             throws IOException, WriterException {
         String encodedData = new String(data.getBytes(), charset);
 

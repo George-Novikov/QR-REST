@@ -23,7 +23,7 @@ public class EncodingResource {
         byte[] byteResponse = null;
 
         try {
-            byteResponse = QRReader.createQR(request.data, charset, request.size);
+            byteResponse = new QRReader().createQR(request.data, request.size);
         } catch (Throwable e){
             httpStatus = 500;
         }
