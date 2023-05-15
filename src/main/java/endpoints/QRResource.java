@@ -102,4 +102,29 @@ public class QRResource {
         Response.ResponseBuilder builder = Response.status(httpStatus).entity(jsonBean).encoding("Cp1251");
         return builder.build();
     }
+
+    @POST
+    @Path("/map")
+    @Consumes("application/pdf")
+    @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")
+    public Response mapDocument(InputStream input){
+        int errorCode = 0;
+        List<String> data = new ArrayList();
+        String message = "Output is valid.";
+        int httpStatus = 200;
+
+        try {
+            data = PDFConverter.mapSubdocuments(input);
+        } catch (Throwable e){
+            errorCode = 1;
+            message = "PDFConverter.mapSubdocuments() error: " + e.getMessage();
+            httpStatus = 500;
+        }
+
+        JSONBean jsonBean = new JSONBean(errorCode, data, message);
+
+        Response.ResponseBuilder builder = Response.status(httpStatus).entity(jsonBean);
+
+        return builder.build();
+    }
 }

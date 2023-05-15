@@ -14,10 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PDFConverter {
     public static List<BufferedImage> pdfToImage(InputStream inStream) throws IOException {
@@ -36,7 +33,7 @@ public class PDFConverter {
         return bufferedImages;
     }
 
-    public static Map<String, PDDocument> mapSubdocuments(InputStream inStream) throws Exception{
+    public static List<String> mapSubdocuments(InputStream inStream) throws Exception{
         PDDocument document = PDDocument.load(inStream);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         int pagesNumber = document.getNumberOfPages();
@@ -57,17 +54,18 @@ public class PDFConverter {
                 qrLabels.add(textContent);
             }
         }
-        List<PDDocument> subdocuments = divideDocument(document, qrIndexes);
+        qrIndexes.add(pagesNumber);
+        //List<PDDocument> subdocuments = divideDocument(document, qrIndexes);
 
         document.close();
 
-        return createMap(qrLabels, subdocuments);
+        return createMap(qrLabels, qrIndexes);
     }
 
     private static List<PDDocument> divideDocument(PDDocument document, List<Integer> qrIndexes) throws Exception{
         Object[] indexes = qrIndexes.toArray();
         List<PDDocument> subdocuments = new ArrayList<>();
-        Map<String, PDDocument> subdocumentMap = new HashMap<>();
+        List<String> stringSubdocumentMap = new ArrayList<>();
 
         for (int i = 0; i < indexes.length; i++){
             int start = (int) indexes[i];
@@ -75,6 +73,8 @@ public class PDFConverter {
 
             PDDocument subdocument = createSubdocument(document, start, end);
             subdocuments.add(subdocument);
+            stringSubdocumentMap.add(subdocument.toString());
+
             subdocument.close();
         }
         return subdocuments;
@@ -90,17 +90,19 @@ public class PDFConverter {
         return subDocument;
     }
 
-    private static Map<String, PDDocument> createMap(List<String> labels, List<PDDocument> subdocuments){
+    private static List<String> createMap(List<String> labels, List<Integer> qrIndexes){
         Object[] labelArray = labels.toArray();
-        Object[] subdocumentArray = subdocuments.toArray();
+        Object[] indexArray = qrIndexes.toArray();
 
-        Map<String, PDDocument> documentMap = new HashMap<>();
+        SubdocumentEntry[] subdocumentsMap = new SubdocumentEntry[labelArray.length];
+        List<String> stringSubdocumentMap = new ArrayList<>();
 
         for (int i = 0; i < labelArray.length; i++){
-            documentMap.put((String) labelArray[i], (PDDocument) subdocumentArray[i]);
+            SubdocumentEntry entry = new SubdocumentEntry((String) labelArray[i], (Integer) indexArray[i]);
+            stringSubdocumentMap.add(entry.toJSON());
         }
 
-        return documentMap;
+        return stringSubdocumentMap;
     }
 
     public static int measureLength(BufferedImage bufferedImage) throws IOException{
