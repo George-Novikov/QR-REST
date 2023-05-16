@@ -25,8 +25,4 @@ public class SubdocumentEntry {
     public void setIndex(int index) {
         this.index = index;
     }
-
-    public String toJSON(){
-        return "{\"label\":\"" + label + "\", \"index\":\"" + index + "\"}";
-    }
 }

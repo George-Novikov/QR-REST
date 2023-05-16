@@ -4,11 +4,11 @@ import java.util.List;
 
 public class JSONBean {
     private int errorCode;
-    private List<String> data;
+    private List<Object> data;
     private String message;
 
     public JSONBean(){}
-    public JSONBean(int errorCode, List<String> data, String message){
+    public JSONBean(int errorCode, List<Object> data, String message){
         this.errorCode = errorCode;
         this.data = data;
         this.message = message;
@@ -22,11 +22,11 @@ public class JSONBean {
         this.errorCode = errorCode;
     }
 
-    public List<String> getData() {
+    public List<Object> getData() {
         return data;
     }
 
-    public void setData(List<String> data) {
+    public void setData(List<Object> data) {
         this.data = data;
     }
 

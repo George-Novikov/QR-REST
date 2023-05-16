@@ -33,7 +33,7 @@ public class PDFConverter {
         return bufferedImages;
     }
 
-    public static List<String> mapSubdocuments(InputStream inStream) throws Exception{
+    public static List<Object> mapSubdocuments(InputStream inStream) throws Exception{
         PDDocument document = PDDocument.load(inStream);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         int pagesNumber = document.getNumberOfPages();
@@ -90,16 +90,15 @@ public class PDFConverter {
         return subDocument;
     }
 
-    private static List<String> createMap(List<String> labels, List<Integer> qrIndexes){
+    private static List<Object> createMap(List<String> labels, List<Integer> qrIndexes){
         Object[] labelArray = labels.toArray();
         Object[] indexArray = qrIndexes.toArray();
 
-        SubdocumentEntry[] subdocumentsMap = new SubdocumentEntry[labelArray.length];
-        List<String> stringSubdocumentMap = new ArrayList<>();
+        List<Object> stringSubdocumentMap = new ArrayList<>();
 
         for (int i = 0; i < labelArray.length; i++){
             SubdocumentEntry entry = new SubdocumentEntry((String) labelArray[i], (Integer) indexArray[i]);
-            stringSubdocumentMap.add(entry.toJSON());
+            stringSubdocumentMap.add(entry);
         }
 
         return stringSubdocumentMap;

@@ -25,7 +25,7 @@ public class QRResource {
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")
     public Response readPDF(InputStream input){
         int errorCode = 0;
-        List<String> data = new ArrayList();
+        List<Object> data = new ArrayList();
         String message = "Output is valid.";
         int httpStatus = 200;
 
@@ -81,7 +81,7 @@ public class QRResource {
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")
     public Response readImage(InputStream input){
         int errorCode = 0;
-        List<String> data = new ArrayList();
+        List<Object> data = new ArrayList();
         String message = "Output is valid.";
         int httpStatus = 200;
 
@@ -109,7 +109,7 @@ public class QRResource {
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")
     public Response mapDocument(InputStream input){
         int errorCode = 0;
-        List<String> data = new ArrayList();
+        List<Object> data = new ArrayList();
         String message = "Output is valid.";
         int httpStatus = 200;
 
