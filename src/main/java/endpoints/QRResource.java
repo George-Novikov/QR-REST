@@ -2,6 +2,7 @@ package endpoints;
 
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import tools.*;
 
 import javax.imageio.ImageIO;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -124,6 +126,34 @@ public class QRResource {
         JSONBean jsonBean = new JSONBean(errorCode, data, message);
 
         Response.ResponseBuilder builder = Response.status(httpStatus).entity(jsonBean);
+
+        return builder.build();
+    }
+
+    @POST
+    @Path("/getsubdoc")
+    @Consumes("application/pdf")
+    @Produces("application/pdf")
+    public Response getSubdocument(InputStream input,
+                                   @QueryParam("start") int start,
+                                   @QueryParam("end") int end){
+        int httpStatus = 200;
+        PDDocument subdocument = null;
+        byte[] output = null;
+
+        try {
+            subdocument = PDFConverter.getSubdocument(input, start, end);
+
+            if (subdocument != null){
+                output = PDFConverter.toByteArray(subdocument);
+            } else {
+                PDDocument emptyDoc = PDFConverter.createEmpty();
+                output = PDFConverter.toByteArray(subdocument);
+                httpStatus = 204;
+            }
+        } catch (Throwable e){}
+
+        Response.ResponseBuilder builder = Response.status(httpStatus).entity(output);
 
         return builder.build();
     }

@@ -17,7 +17,6 @@ public class EncodingResource {
     @Consumes(MediaType.APPLICATION_JSON + "; charset=utf-8")
     @Produces("image/png")
     public Response createQR(CreateRequest request){
-        String charset = "UTF-8";
         int httpStatus = 200;
 
         byte[] byteResponse = null;

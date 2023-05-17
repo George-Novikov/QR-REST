@@ -3,8 +3,9 @@ package tools;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
+import com.sun.scenario.effect.impl.prism.ps.PPSDisplacementMapPeer;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -33,6 +34,18 @@ public class PDFConverter {
         return bufferedImages;
     }
 
+    public static PDDocument getSubdocument(InputStream inStream, int start, int end) throws Exception{
+        PDDocument document = PDDocument.load(inStream);
+        PDDocument subdocument = new PDDocument();
+
+        for (int i = start; i <= end; i++){
+            PDPage page = document.getPage(i);
+            subdocument.addPage(page);
+        }
+
+        return subdocument;
+    }
+
     public static List<Object> mapSubdocuments(InputStream inStream) throws Exception{
         PDDocument document = PDDocument.load(inStream);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -55,39 +68,10 @@ public class PDFConverter {
             }
         }
         qrIndexes.add(pagesNumber);
-        //List<PDDocument> subdocuments = divideDocument(document, qrIndexes);
 
         document.close();
 
         return createMap(qrLabels, qrIndexes);
-    }
-
-    private static List<PDDocument> divideDocument(PDDocument document, List<Integer> qrIndexes) throws Exception{
-        Object[] indexes = qrIndexes.toArray();
-        List<PDDocument> subdocuments = new ArrayList<>();
-        List<String> stringSubdocumentMap = new ArrayList<>();
-
-        for (int i = 0; i < indexes.length; i++){
-            int start = (int) indexes[i];
-            int end = (int) indexes[i+1];
-
-            PDDocument subdocument = createSubdocument(document, start, end);
-            subdocuments.add(subdocument);
-            stringSubdocumentMap.add(subdocument.toString());
-
-            subdocument.close();
-        }
-        return subdocuments;
-    }
-
-    private static PDDocument createSubdocument(PDDocument document, int startPage, int endPage) throws Exception{
-        PDDocument subDocument = new PDDocument();
-        for (int i = startPage; i < endPage; i++){
-            PDPage page = document.getPage(i);
-            subDocument.addPage(page);
-        }
-        subDocument.close();
-        return subDocument;
     }
 
     private static List<Object> createMap(List<String> labels, List<Integer> qrIndexes){
@@ -97,8 +81,14 @@ public class PDFConverter {
         List<Object> stringSubdocumentMap = new ArrayList<>();
 
         for (int i = 0; i < labelArray.length; i++){
-            SubdocumentEntry entry = new SubdocumentEntry((String) labelArray[i], (Integer) indexArray[i]);
-            stringSubdocumentMap.add(entry);
+            String label = (String) labelArray[i];
+            int start = (Integer) indexArray[i];
+            int end;
+            if (i+1 <= labelArray.length){
+                end = (Integer) indexArray[i+1];
+                SubdocumentEntry entry = new SubdocumentEntry(label, start, end-1);
+                stringSubdocumentMap.add(entry);
+            }
         }
 
         return stringSubdocumentMap;
@@ -109,5 +99,26 @@ public class PDFConverter {
         ImageIO.write(bufferedImage, "png", bufferStream);
         bufferStream.close();
         return bufferStream.size();
+    }
+
+    public static byte[] toByteArray(PDDocument document) throws Exception{
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        document.save(baos);
+        document.close();
+        return baos.toByteArray();
+    }
+
+    public static PDDocument createEmpty() throws Exception{
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        PDPageContentStream pageStream = new PDPageContentStream(document, page);
+        pageStream.beginText();
+        pageStream.setFont(PDType1Font.TIMES_ROMAN, 12);
+        pageStream.newLineAtOffset(25, 500);
+        pageStream.showText("Empty output. No subdocument.");
+        pageStream.endText();
+        pageStream.close();
+        document.close();
+        return document;
     }
 }
