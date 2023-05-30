@@ -146,9 +146,11 @@ public class QRResource {
 
             if (subdocument != null){
                 output = PDFConverter.toByteArray(subdocument);
+                subdocument.close();
             } else {
                 PDDocument emptyDoc = PDFConverter.createEmpty();
                 output = PDFConverter.toByteArray(subdocument);
+                emptyDoc.close();
                 httpStatus = 204;
             }
         } catch (Throwable e){}
