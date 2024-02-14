@@ -1,20 +1,17 @@
 package tools;
 
-import com.google.zxing.EncodeHintType;
 import com.google.zxing.NotFoundException;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.sun.scenario.effect.impl.prism.ps.PPSDisplacementMapPeer;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import services.QRService;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Array;
 import java.util.*;
 
 public class PDFConverter {
@@ -59,7 +56,7 @@ public class PDFConverter {
 
             String textContent = "";
             try {
-                textContent = new QRReader().readQR(bufferedPage);
+                textContent = new QRService().readQR(bufferedPage);
             } catch (NotFoundException e){}
 
             if (textContent != ""){
@@ -120,5 +117,10 @@ public class PDFConverter {
         pageStream.close();
         document.close();
         return document;
+    }
+
+    public static byte[] getEmptyPDFBytes() throws Exception {
+        PDDocument document = createEmpty();
+        return toByteArray(document);
     }
 }
